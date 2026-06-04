@@ -1,0 +1,14 @@
+# Levanta PostgreSQL con las DOS bases independientes (BD por microservicio):
+#   - db_usuarios       (usuario-service)
+#   - db_productividad  (productividad-service)
+services:
+  postgres:
+    image: postgres:16
+    container_name: focusgame-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
