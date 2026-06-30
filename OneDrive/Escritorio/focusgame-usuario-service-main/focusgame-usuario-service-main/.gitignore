@@ -1,9 +1,9 @@
-.vscode/
-target/
-*.log
-*.class
-.idea/
-*.iml
+# Ignorar todo 
+!usuario-service/ 
+!productividad-service/ 
+!docker-compose.yml 
+!init/ 
+!start-all.ps1 
+usuario-service/target/ 
+productividad-service/target/ 
 .vscode/ 
-target/ 
-*.log 
