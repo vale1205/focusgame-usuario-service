@@ -1,0 +1,115 @@
+package cl.focusgame.usuario_service.controller;
+
+import cl.focusgame.usuario_service.assembler.UsuarioModelAssembler;
+import cl.focusgame.usuario_service.dto.ActualizarUsuarioRequest;
+import cl.focusgame.usuario_service.dto.UsuarioResponse;
+import cl.focusgame.usuario_service.exception.RecursoNoEncontradoException;
+import cl.focusgame.usuario_service.security.JwtAuthenticationFilter;
+import cl.focusgame.usuario_service.service.UsuarioService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(UsuarioController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@Import(UsuarioModelAssembler.class)
+class UsuarioControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private UsuarioService service;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Test
+    void listarDevuelve200ConColeccionDeUsuariosYLinksHateoas() throws Exception {
+        UsuarioResponse u = new UsuarioResponse(1L, "a@b.com", "ana");
+        when(service.listarTodos()).thenReturn(List.of(u));
+
+        mockMvc.perform(get("/api/usuarios"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("ana")))
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"actualizar\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"eliminar\"")));
+    }
+
+    @Test
+    void listarDevuelve204CuandoNoHayUsuarios() throws Exception {
+        when(service.listarTodos()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/usuarios"))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void obtenerDevuelve200ConElUsuarioYSusLinks() throws Exception {
+        UsuarioResponse u = new UsuarioResponse(1L, "a@b.com", "ana");
+        when(service.buscarPorId(1L)).thenReturn(u);
+
+        mockMvc.perform(get("/api/usuarios/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("ana"))
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._links.actualizar.href").exists())
+                .andExpect(jsonPath("$._links.eliminar.href").exists());
+    }
+
+    @Test
+    void obtenerDevuelve404CuandoNoExiste() throws Exception {
+        when(service.buscarPorId(99L)).thenThrow(new RecursoNoEncontradoException("Usuario con id 99 no existe"));
+
+        mockMvc.perform(get("/api/usuarios/{id}", 99L))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void actualizarDevuelve200ConElUsuarioActualizado() throws Exception {
+        UsuarioResponse actualizado = new UsuarioResponse(1L, "nuevo@b.com", "nuevo");
+        ActualizarUsuarioRequest req = new ActualizarUsuarioRequest("nuevo@b.com", "nuevo");
+        when(service.actualizar(eq(1L), any())).thenReturn(actualizado);
+
+        mockMvc.perform(put("/api/usuarios/{id}", 1L)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("nuevo@b.com"));
+    }
+
+    @Test
+    void actualizarDevuelve400CuandoElEmailEsInvalido() throws Exception {
+        ActualizarUsuarioRequest req = new ActualizarUsuarioRequest("no-es-un-email", "nuevo");
+
+        mockMvc.perform(put("/api/usuarios/{id}", 1L)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void eliminarDevuelve204() throws Exception {
+        mockMvc.perform(delete("/api/usuarios/{id}", 1L))
+                .andExpect(status().isNoContent());
+    }
+}

@@ -1,1 +1,11 @@
-C:\Users\valen\Downloads\FocusGame-Test-main creo\FocusGame-Test-main\productividad-service\src\test\java\cl\focusgame\productividad_service\ProductividadServiceApplicationTests.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\assembler\SesionModelAssemblerTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\assembler\TareaModelAssemblerTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\client\FeignConfigTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\controller\SesionControllerTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\controller\TareaControllerTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\exception\GlobalExceptionHandlerTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\ProductividadServiceApplicationTests.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\security\JwtAuthenticationFilterTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\security\JwtServiceTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\service\SesionServiceTest.java
+C:\Users\valen\OneDrive\Escritorio\focusgame-usuario-service-main\productividad-service\src\test\java\cl\focusgame\productividad_service\service\TareaServiceTest.java

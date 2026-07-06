@@ -1,0 +1,11 @@
+cl\focusgame\productividad_service\service\TareaServiceTest.class
+cl\focusgame\productividad_service\service\SesionServiceTest.class
+cl\focusgame\productividad_service\assembler\TareaModelAssemblerTest.class
+cl\focusgame\productividad_service\controller\SesionControllerTest.class
+cl\focusgame\productividad_service\controller\TareaControllerTest.class
+cl\focusgame\productividad_service\ProductividadServiceApplicationTests.class
+cl\focusgame\productividad_service\security\JwtServiceTest.class
+cl\focusgame\productividad_service\client\FeignConfigTest.class
+cl\focusgame\productividad_service\exception\GlobalExceptionHandlerTest.class
+cl\focusgame\productividad_service\security\JwtAuthenticationFilterTest.class
+cl\focusgame\productividad_service\assembler\SesionModelAssemblerTest.class

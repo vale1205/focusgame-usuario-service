@@ -2,7 +2,7 @@ spring:
   application:
     name: usuario-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/db_usuarios
+    url: jdbc:postgresql://${DB_HOST:postgres}:5432/db_usuarios
     username: ${DB_USER:postgres}
     password: ${DB_PASS:postgres}
     driver-class-name: org.postgresql.Driver
@@ -18,7 +18,7 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8084}
 
 jwt:
   secret: ${JWT_SECRET:focusgame-clave-secreta-compartida-de-al-menos-32-bytes-0123456789}
