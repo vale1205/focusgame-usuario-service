@@ -18,7 +18,7 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: ${SERVER_PORT:8084}
+  port: ${SERVER_PORT:8001}
 
 jwt:
   secret: ${JWT_SECRET:focusgame-clave-secreta-compartida-de-al-menos-32-bytes-0123456789}

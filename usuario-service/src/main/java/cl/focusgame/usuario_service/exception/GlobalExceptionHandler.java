@@ -33,14 +33,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<ErrorResponse> credenciales(CredencialesInvalidasException ex,
-                                                       HttpServletRequest req) {
+                                        HttpServletRequest req) {
         log.warn("Credenciales invalidas en {}", req.getRequestURI());
         return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), req, List.of());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> validacion(MethodArgumentNotValidException ex,
-                                                     HttpServletRequest req) {
+                            HttpServletRequest req) {
         List<String> detalles = ex.getBindingResult().getFieldErrors().stream()
                 .map(e -> e.getField() + ": " + e.getDefaultMessage())
                 .toList();

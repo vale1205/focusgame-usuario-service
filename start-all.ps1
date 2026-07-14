@@ -1,6 +1,6 @@
 <#
     Levanta el stack completo de FocusGame para desarrollo local:
-    PostgreSQL (Docker) + usuario-service (8081) + productividad-service (8082).
+    PostgreSQL (Docker) + usuario-service (8001) + productividad-service (8002) + gamificacion-service (8004).
 #>
 
 $ErrorActionPreference = "Stop"
@@ -117,17 +117,20 @@ Wait-Postgres
 
 Start-ServiceWindow -Name "usuario-service" -Path (Join-Path $root "usuario-service") -JavaHome $javaHome
 Start-ServiceWindow -Name "productividad-service" -Path (Join-Path $root "productividad-service") -JavaHome $javaHome
+Start-ServiceWindow -Name "gamificacion-service" -Path (Join-Path $root "gamificacion-service") -JavaHome $javaHome
 
-Write-Host "Esperando a que ambos servicios respondan (en paralelo)..." -ForegroundColor Cyan
+Write-Host "Esperando a que los servicios respondan (en paralelo)..." -ForegroundColor Cyan
 $resultados = Wait-ServicesReady -Services @(
-    @{ Name = "usuario-service"; Port = 8084 },
-    @{ Name = "productividad-service"; Port = 8082 }
+    @{ Name = "usuario-service"; Port = 8001 },
+    @{ Name = "productividad-service"; Port = 8002 },
+    @{ Name = "gamificacion-service"; Port = 8004 }
 )
 
 Write-Host ""
 foreach ($svc in $resultados) {
     if ($svc.Ready) {
-        Write-Host "$($svc.Name) -> http://localhost:$($svc.Port)/swagger-ui.html" -ForegroundColor Green
+        Write-Host "$($svc.Name) -> http://localhost:$
+        ($svc.Port)/swagger-ui.html" -ForegroundColor Green
     } else {
         Write-Host "$($svc.Name) -> aun no responde, revisa su ventana" -ForegroundColor Yellow
     }

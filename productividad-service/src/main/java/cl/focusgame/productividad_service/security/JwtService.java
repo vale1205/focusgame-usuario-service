@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 // Este microservicio NO emite tokens; solo valida los emitidos por usuario-service.
 @Service
 public class JwtService {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
 
     private final SecretKey key;
 
@@ -29,6 +33,7 @@ public class JwtService {
             parse(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            log.warn("Token JWT invalido: {}", e.getMessage());
             return false;
         }
     }

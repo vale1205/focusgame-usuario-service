@@ -1,6 +1,7 @@
-# Levanta PostgreSQL con las DOS bases independientes (BD por microservicio):
+# Levanta PostgreSQL con una base independiente por microservicio:
 #   - db_usuarios       (usuario-service)
 #   - db_productividad  (productividad-service)
+#   - db_gamificacion   (gamificacion-service)
 services:
   postgres:
     image: postgres:16
@@ -28,12 +29,18 @@ services:
       DB_HOST: postgres
       DB_USER: postgres
       DB_PASS: postgres
-      SERVER_PORT: 8081
+      SERVER_PORT: 8001
     ports:
-      - "8081:8081"
+      - "8001:8001"
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8001/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   productividad-service:
     build:
@@ -43,12 +50,64 @@ services:
       DB_HOST: postgres
       DB_USER: postgres
       DB_PASS: postgres
-      SERVER_PORT: 8082
-      USUARIO_SERVICE_URL: http://usuario-service:8081
+      SERVER_PORT: 8002
+      USUARIO_SERVICE_URL: http://usuario-service:8001
     ports:
-      - "8082:8082"
+      - "8002:8002"
     depends_on:
-      - usuario-service
+      postgres:
+        condition: service_healthy
+      usuario-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8002/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  gamificacion-service:
+    build:
+      context: ./gamificacion-service
+    container_name: focusgame-gamificacion-service
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASS: postgres
+      SERVER_PORT: 8004
+      PRODUCTIVIDAD_SERVICE_URL: http://productividad-service:8002
+    ports:
+      - "8004:8004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      productividad-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8004/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: focusgame-api-gateway
+    environment:
+      SERVER_PORT: 8080
+      USUARIO_SERVICE_URL: http://usuario-service:8001
+      PRODUCTIVIDAD_SERVICE_URL: http://productividad-service:8002
+      GAMIFICACION_SERVICE_URL: http://gamificacion-service:8004
+    ports:
+      - "8080:8080"
+    depends_on:
+      usuario-service:
+        condition: service_healthy
+      productividad-service:
+        condition: service_healthy
+      gamificacion-service:
+        condition: service_healthy
 
 volumes:
   postgres_data:

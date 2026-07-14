@@ -24,36 +24,50 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public List<UsuarioResponse> listarTodos() {
-        return repo.findAll().stream()
+        log.info("Listando todos los usuarios");
+        List<UsuarioResponse> usuarios = repo.findAll().stream()
                 .map(this::aResponse)
                 .toList();
+        log.debug("Usuarios encontrados cantidad={}", usuarios.size());
+        return usuarios;
     }
 
     @Transactional(readOnly = true)
     public UsuarioResponse buscarPorId(Long id) {
+        log.info("Buscando usuario id={}", id);
         Usuario u = repo.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con id " + id + " no existe"));
+                .orElseThrow(() -> {
+                    log.warn("Usuario no encontrado id={}", id);
+                    return new RecursoNoEncontradoException("Usuario con id " + id + " no existe");
+                });
+        log.debug("Usuario encontrado id={}", id);
         return aResponse(u);
     }
 
     @Transactional
     public UsuarioResponse actualizar(Long id, ActualizarUsuarioRequest req) {
+        log.info("Actualizando usuario id={} email={} username={}", id, req.email(), req.username());
         Usuario existente = repo.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario con id " + id + " no existe"));
+                .orElseThrow(() -> {
+                    log.warn("Actualizacion rechazada: usuario no existe id={}", id);
+                    return new RecursoNoEncontradoException("Usuario con id " + id + " no existe");
+                });
         existente.setEmail(req.email());
         existente.setUsername(req.username());
         Usuario guardado = repo.save(existente);
-        log.info("Usuario actualizado id={}", guardado.getId());
+        log.debug("Usuario actualizado exitosamente id={}", guardado.getId());
         return aResponse(guardado);
     }
 
     @Transactional
     public void eliminar(Long id) {
+        log.info("Eliminando usuario id={}", id);
         if (!repo.existsById(id)) {
+            log.warn("Eliminacion rechazada: usuario no existe id={}", id);
             throw new RecursoNoEncontradoException("Usuario con id " + id + " no existe");
         }
         repo.deleteById(id);
-        log.info("Usuario eliminado id={}", id);
+        log.debug("Usuario eliminado exitosamente id={}", id);
     }
 
     private UsuarioResponse aResponse(Usuario u) {

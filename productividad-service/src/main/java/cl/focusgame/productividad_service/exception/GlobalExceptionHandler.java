@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServicioRemotoException.class)
     public ResponseEntity<ErrorResponse> remoto(ServicioRemotoException ex, HttpServletRequest req) {
         log.error("Servicio remoto: {}", ex.getMessage());
-        return build(HttpStatus.BAD_GATEWAY, ex.getMessage(), req, List.of());
+        return build(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), req, List.of());
     }
 
     @ExceptionHandler(Exception.class)

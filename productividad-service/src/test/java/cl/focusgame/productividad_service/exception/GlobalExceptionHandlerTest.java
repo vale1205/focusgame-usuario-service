@@ -77,14 +77,14 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("remoto devuelve 502 con el mensaje de la excepcion")
-    void remotoDevuelve502() {
+    @DisplayName("remoto devuelve 503 con el mensaje de la excepcion")
+    void remotoDevuelve503() {
         when(request.getRequestURI()).thenReturn("/api/tareas");
 
         ResponseEntity<ErrorResponse> resultado = handler.remoto(
                 new ServicioRemotoException("Servicio de usuarios no disponible"), request);
 
-        assertThat(resultado.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+        assertThat(resultado.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
         assertThat(resultado.getBody().message()).isEqualTo("Servicio de usuarios no disponible");
     }
 
