@@ -54,21 +54,15 @@ public class GamificacionService {
         }
 
         int xpOtorgado = sesion.duracionMinutos();
-        int nivelAnterior = obtenerProgreso(sesion.usuarioId()).nivel();
-        ProgresoDTO progresoActualizado = sumarXp(sesion.usuarioId(), xpOtorgado);
+
+        // Simulación de progreso (sin progreso-service)
+        int nivelActual = Math.max(1, (xpOtorgado / 100) + 1);
 
         List<String> recompensasOtorgadas = new ArrayList<>();
-        if (progresoActualizado.totalSesiones() % SESIONES_POR_RACHA == 0) {
-            String nombre = "Racha de " + SESIONES_POR_RACHA + " sesiones";
-            otorgarRecompensa(new CrearRecompensaRequest(sesion.usuarioId(), nombre,
-                    "Completaste " + progresoActualizado.totalSesiones() + " sesiones de enfoque"));
-            recompensasOtorgadas.add(nombre);
-        }
-        if (progresoActualizado.nivel() > nivelAnterior) {
-            String nombre = "Subida de nivel " + progresoActualizado.nivel();
-            otorgarRecompensa(new CrearRecompensaRequest(sesion.usuarioId(), nombre,
-                    "Alcanzaste el nivel " + progresoActualizado.nivel()));
-            recompensasOtorgadas.add(nombre);
+
+        // Regla simple para el ET
+        if (xpOtorgado >= 60) {
+            recompensasOtorgadas.add("Sesión de Alto Rendimiento");
         }
 
         EventoGamificacion evento = new EventoGamificacion();
@@ -79,10 +73,10 @@ public class GamificacionService {
         repo.save(evento);
 
         log.debug("Sesion procesada exitosamente sesionId={} usuarioId={} xpOtorgado={} nivelActual={} recompensas={}",
-                sesionId, sesion.usuarioId(), xpOtorgado, progresoActualizado.nivel(), recompensasOtorgadas);
+        sesionId, sesion.usuarioId(), xpOtorgado, nivelActual, recompensasOtorgadas);
 
-        return new ResumenGamificacionResponse(xpOtorgado, progresoActualizado.nivel(), recompensasOtorgadas);
-    }
+        return new ResumenGamificacionResponse(xpOtorgado, nivelActual, recompensasOtorgadas);
+        }
 
     @Transactional(readOnly = true)
     public List<EventoGamificacion> historialPorUsuario(Long usuarioId) {
